@@ -39,6 +39,7 @@ public struct RepositoryRowView: View {
     public var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             Button {
+                viewStore.send(.rowTapped)
                   } label: {
                     VStack(alignment: .leading, spacing: 8) {
                         Text(viewStore.repository.fullName)
