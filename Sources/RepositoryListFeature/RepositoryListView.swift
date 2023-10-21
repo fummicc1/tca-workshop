@@ -119,7 +119,7 @@ public struct RepositoryListView: View {
     }
 
     public var body: some View {
-//        NavigationStack {
+        NavigationStack {
             WithViewStore(store, observe: { $0 }) { viewStore in
                 Group {
                     if viewStore.isLoading {
@@ -140,10 +140,11 @@ public struct RepositoryListView: View {
                 .onAppear {
                     viewStore.send(.onAppear)
                 }
-//                .navigationTitle("Repositories")
-//                .searchable(text: viewStore.$query, placement: .navigationBarDrawer, prompt: "Input Query")
+                .navigationTitle("Repositories")
+                .searchable(text: viewStore.$query, placement: .navigationBarDrawer, prompt: "Input Query")
             }
-//        }
+        }
+        
     }
 }
 
