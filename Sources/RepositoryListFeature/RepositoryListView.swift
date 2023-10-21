@@ -2,6 +2,7 @@ import CasePaths
 import ComposableArchitecture
 import SwiftUI
 import IdentifiedCollections
+import RepositoryDetailFeature
 import GitHubAPIClient
 import Entity
 
@@ -10,7 +11,7 @@ public struct RepositoryList: Reducer {
         var repositoryRows: IdentifiedArrayOf<RepositoryRow.State> = []
         var isLoading: Bool = false
         @BindingState var query: String = ""
-        @PresentationState var alert: AlertState<Action.Alert>?
+        @PresentationState var destination: Destination.State?
 
         public init() {}
     }
@@ -29,7 +30,7 @@ public struct RepositoryList: Reducer {
         )
         case queryChangeDebounced
         case binding(BindingAction<State>)
-        case alert(action: PresentationAction<Alert>)
+        case destination(PresentationAction<Destination.Action>)
 
         public enum Alert: Equatable {
 
@@ -58,12 +59,7 @@ public struct RepositoryList: Reducer {
                     )
                     return .none
                 case .failure:
-                    state.alert = .networkError
-                    return .none
-                }
-            case let .repositoryRow(_, action):
-                switch action {
-                case .rowTapped:
+                    state.destination = .alert(.networkError)
                     return .none
                 }
             case .queryChangeDebounced:
@@ -80,12 +76,23 @@ public struct RepositoryList: Reducer {
                           for: .seconds(0.3), scheduler: mainQueue)
             case .binding(_):
                 return .none
-            case .alert:
+            case .destination:
+                return .none
+            case .repositoryRow(let id, .delegate(.rowTapped)):
+                guard let repository = state.repositoryRows[id: id]?.repository else {
+                    return .none
+                }
+                state.destination = .repositoryDetail(RepositoryDetail.State(repository: repository))
+                return .none
+            case .repositoryRow:
                 return .none
             }
         }
         .forEach(\.repositoryRows, action: /Action.repositoryRow(id:action:)) {
             RepositoryRow()
+        }
+        .ifLet(\.$destination, action: /Action.destination) {
+            Destination()
         }
     }
 
@@ -103,12 +110,12 @@ public struct RepositoryList: Reducer {
 
 }
 
-extension AlertState where Action == RepositoryList.Action.Alert {
-  static let networkError = Self {
-    TextState("Network Error")
-  } message: {
-    TextState("Failed to fetch data.")
-  }
+extension AlertState where Action == RepositoryList.Destination.Action.Alert {
+    static let networkError = Self {
+        TextState("Network Error")
+    } message: {
+        TextState("Failed to fetch data.")
+    }
 }
 
 public struct RepositoryListView: View {
@@ -143,12 +150,17 @@ public struct RepositoryListView: View {
                 .navigationTitle("Repositories")
                 .searchable(text: viewStore.$query, placement: .navigationBarDrawer, prompt: "Input Query")
                 .alert(store: store.scope(
-                    state: { $0.$alert },
-                    action: { .alert(action: $0) }
-                ))
+                    state: { $0.$destination },
+                    action: { .destination($0) }
+                ), state: /RepositoryList.Destination.State.alert, action: RepositoryList.Destination.Action.alert)
+                .navigationDestination(
+                    store: store.scope(state: { $0.$destination }, action: { .destination($0) }),
+                    state: /RepositoryList.Destination.State.repositoryDetail,
+                    action: RepositoryList.Destination.Action.repositoryDetail,
+                    destination: RepositoryDetailView.init(store:)
+                )
             }
         }
-
     }
 }
 
@@ -165,24 +177,45 @@ public struct RepositoryListView: View {
             } operation: {
                 RepositoryList()
             }
- }
+            }
         )
     )
 }
 
 #Preview("API Failed") {
-  enum PreviewError: Error {
-    case fetchFailed
-  }
-  return RepositoryListView(
-    store: .init(
-      initialState: RepositoryList.State()
-    ) {
-      RepositoryList()
-    } withDependencies: {
-      $0.gitHubAPIClient.searchRepositories = { _ in
-        throw PreviewError.fetchFailed
-      }
+    enum PreviewError: Error {
+        case fetchFailed
     }
-  )
+    return RepositoryListView(
+        store: .init(
+            initialState: RepositoryList.State()
+        ) {
+            RepositoryList()
+        } withDependencies: {
+            $0.gitHubAPIClient.searchRepositories = { _ in
+                throw PreviewError.fetchFailed
+            }
+        }
+    )
+}
+
+extension RepositoryList {
+    public struct Destination: Reducer {
+        public enum State: Equatable {
+            case alert(AlertState<Action.Alert>)
+            case repositoryDetail(RepositoryDetail.State)
+        }
+
+        public enum Action: Equatable {
+            case alert(Alert)
+            case repositoryDetail(RepositoryDetail.Action)
+            public enum Alert: Equatable { }
+        }
+
+        public var body: some ReducerOf<Self> {
+            Scope(state: /State.repositoryDetail, action: /Action.repositoryDetail) {
+                RepositoryDetail()
+            }
+        }
+    }
 }
