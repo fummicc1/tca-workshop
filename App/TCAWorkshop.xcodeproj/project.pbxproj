@@ -10,6 +10,7 @@
 		C7A7DB6D2AAD4C8D0029DCBA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C7A7DB682AAD4C8D0029DCBA /* Assets.xcassets */; };
 		C7A7DB6E2AAD4C8D0029DCBA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C7A7DB6A2AAD4C8D0029DCBA /* Preview Assets.xcassets */; };
 		C7A7DB6F2AAD4C8D0029DCBA /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A7DB6C2AAD4C8D0029DCBA /* App.swift */; };
+		D3830ABE2AE3981300B90A4E /* RepositoryListFeature in Frameworks */ = {isa = PBXBuildFile; productRef = D3830ABD2AE3981300B90A4E /* RepositoryListFeature */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,6 +28,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D3830ABE2AE3981300B90A4E /* RepositoryListFeature in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -95,6 +97,7 @@
 			);
 			name = TCAWorkshop;
 			packageProductDependencies = (
+				D3830ABD2AE3981300B90A4E /* RepositoryListFeature */,
 			);
 			productName = TCAWorkshop;
 			productReference = C76268EC2AAD4420008D03E7 /* TCAWorkshop.app */;
@@ -288,6 +291,7 @@
 				DOCC_HOSTING_BASE_PATH = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				GITHUB_PERSONAL_ACCESS_TOKEN = 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;
 				INFOPLIST_FILE = "TCAWorkshop-Info.plist";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -299,7 +303,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.5;
@@ -327,6 +331,7 @@
 				DOCC_HOSTING_BASE_PATH = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				GITHUB_PERSONAL_ACCESS_TOKEN = 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;
 				INFOPLIST_FILE = "TCAWorkshop-Info.plist";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -338,7 +343,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.5;
@@ -375,6 +380,13 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D3830ABD2AE3981300B90A4E /* RepositoryListFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RepositoryListFeature;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = C76268E42AAD4420008D03E7 /* Project object */;
 }
