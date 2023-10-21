@@ -12,6 +12,7 @@ public struct RepositoryList: Reducer {
         var isLoading: Bool = false
         @BindingState var query: String = ""
         @PresentationState var destination: Destination.State?
+        var path = StackState<Path.State>()
 
         public init() {}
     }
@@ -31,6 +32,7 @@ public struct RepositoryList: Reducer {
         case queryChangeDebounced
         case binding(BindingAction<State>)
         case destination(PresentationAction<Destination.Action>)
+        case path(StackAction<Path.State, Path.Action>)
 
         public enum Alert: Equatable {
 
@@ -82,9 +84,13 @@ public struct RepositoryList: Reducer {
                 guard let repository = state.repositoryRows[id: id]?.repository else {
                     return .none
                 }
-                state.destination = .repositoryDetail(RepositoryDetail.State(repository: repository))
+                state.path.append(
+                    .repositoryDetail(RepositoryDetail.State(repository: repository))
+                )
                 return .none
             case .repositoryRow:
+                return .none
+            case .path:
                 return .none
             }
         }
@@ -93,6 +99,9 @@ public struct RepositoryList: Reducer {
         }
         .ifLet(\.$destination, action: /Action.destination) {
             Destination()
+        }
+        .forEach(\.path, action: /Action.path) {
+            Path()
         }
     }
 
@@ -126,7 +135,12 @@ public struct RepositoryListView: View {
     }
 
     public var body: some View {
-        NavigationStack {
+        NavigationStackStore(
+            store.scope(
+                state: \.path,
+                action: { .path($0) }
+            )
+        ) {
             WithViewStore(store, observe: { $0 }) { viewStore in
                 Group {
                     if viewStore.isLoading {
@@ -149,15 +163,28 @@ public struct RepositoryListView: View {
                 }
                 .navigationTitle("Repositories")
                 .searchable(text: viewStore.$query, placement: .navigationBarDrawer, prompt: "Input Query")
-                .alert(store: store.scope(
-                    state: { $0.$destination },
-                    action: { .destination($0) }
-                ), state: /RepositoryList.Destination.State.alert, action: RepositoryList.Destination.Action.alert)
-                .navigationDestination(
-                    store: store.scope(state: { $0.$destination }, action: { .destination($0) }),
-                    state: /RepositoryList.Destination.State.repositoryDetail,
-                    action: RepositoryList.Destination.Action.repositoryDetail,
-                    destination: RepositoryDetailView.init(store:)
+                .alert(
+                    store: store.scope(
+                        state: { $0.$destination },
+                        action: { .destination($0) }
+                    ),
+                    state: /RepositoryList.Destination.State.alert,
+                    action: RepositoryList.Destination.Action.alert
+                )
+//                .navigationDestination(
+//                    store: store.scope(state: { $0.$destination }, action: { .destination($0) }),
+//                    state: /RepositoryList.Destination.State.repositoryDetail,
+//                    action: RepositoryList.Destination.Action.repositoryDetail,
+//                    destination: RepositoryDetailView.init(store:)
+//                )
+            }
+        } destination: { state in
+            switch state {
+            case .repositoryDetail:
+                CaseLet(
+                    /RepositoryList.Path.State.repositoryDetail,
+                     action: RepositoryList.Path.Action.repositoryDetail,
+                     then: RepositoryDetailView.init(store:)
                 )
             }
         }
@@ -203,13 +230,25 @@ extension RepositoryList {
     public struct Destination: Reducer {
         public enum State: Equatable {
             case alert(AlertState<Action.Alert>)
-            case repositoryDetail(RepositoryDetail.State)
         }
 
         public enum Action: Equatable {
             case alert(Alert)
-            case repositoryDetail(RepositoryDetail.Action)
             public enum Alert: Equatable { }
+        }
+
+        public var body: some ReducerOf<Self> {
+            EmptyReducer()
+        }
+    }
+
+    public struct Path: Reducer {
+        public enum State: Equatable {
+            case repositoryDetail(RepositoryDetail.State)
+        }
+
+        public enum Action: Equatable {
+            case repositoryDetail(RepositoryDetail.Action)
         }
 
         public var body: some ReducerOf<Self> {
