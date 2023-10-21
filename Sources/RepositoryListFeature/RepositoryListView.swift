@@ -2,6 +2,7 @@ import CasePaths
 import ComposableArchitecture
 import SwiftUI
 import IdentifiedCollections
+import GitHubAPIClient
 import Entity
 
 public struct RepositoryList: Reducer {
@@ -12,6 +13,9 @@ public struct RepositoryList: Reducer {
 
         public init() {}
     }
+
+    @Dependency(\.gitHubAPIClient) var gitHubApiClient
+    @Dependency(\.mainQueue) var mainQueue
 
     public init() {}
 
@@ -66,7 +70,7 @@ public struct RepositoryList: Reducer {
                     await send(.queryChangeDebounced)
                 }
                 .debounce(id: CancelID.response,
-                          for: .seconds(0.3), scheduler: DispatchQueue.main)
+                          for: .seconds(0.3), scheduler: mainQueue)
             case .binding(_):
                 return .none
             }
@@ -81,33 +85,12 @@ public struct RepositoryList: Reducer {
             await send(
                 Action.searchRepositoriesResponse(
                     TaskResult {
-                        let url = URL(
-                            string: "https://api.github.com/search/repositories?q=\(query)&sort=stars"
-                        )!
-                        var request = URLRequest(url: url)
-                        if let token = Bundle.main.infoDictionary?["GitHubPersonalAccessToken"] as? String {
-                            request.setValue(
-                                "Bearer \(token)",
-                                forHTTPHeaderField: "Authorization"
-                            )
-                        }
-                        let (data, _) = try await URLSession.shared.data(for: request)
-                        let repositories = try jsonDecoder.decode(
-                            GithubSearchResult.self,
-                            from: data
-                        ).items
-                        return repositories
+                        try await gitHubApiClient.searchRepositories(query)
                     }
                 )
             )
         }
     }
-
-    private var jsonDecoder: JSONDecoder = {
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-        return decoder
-    }()
 
 }
 
@@ -144,7 +127,7 @@ public struct RepositoryListView: View {
                 .searchable(text: viewStore.$query, placement: .navigationBarDrawer, prompt: "Input Query")
             }
         }
-        
+
     }
 }
 
@@ -153,7 +136,15 @@ public struct RepositoryListView: View {
         store: StoreOf<RepositoryList>(
             initialState:
                 RepositoryList.State(),
-            reducer: { RepositoryList() }
+            reducer: { withDependencies {
+                $0.gitHubAPIClient.searchRepositories = { _ in
+                    try await Task.sleep(nanoseconds: 100_000_000 * 3)
+                    return (1...20).map({ Repository.mock(id: $0) })
+                }
+            } operation: {
+                RepositoryList()
+            }
+ }
         )
     )
 }
