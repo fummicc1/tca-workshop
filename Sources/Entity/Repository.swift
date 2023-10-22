@@ -4,7 +4,7 @@ public struct GithubSearchResult: Codable {
   public let items: [Repository]
 }
 
-public struct Repository: Codable, Equatable {
+public struct Repository: Codable, Equatable, Identifiable {
   public let id: Int
   public let fullName: String
   public let description: String?

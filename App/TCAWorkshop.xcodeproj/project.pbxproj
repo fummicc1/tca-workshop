@@ -291,7 +291,7 @@
 				DOCC_HOSTING_BASE_PATH = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				GITHUB_PERSONAL_ACCESS_TOKEN = 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;
+				GITHUB_PERSONAL_ACCESS_TOKEN = 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;
 				INFOPLIST_FILE = "TCAWorkshop-Info.plist";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -331,7 +331,7 @@
 				DOCC_HOSTING_BASE_PATH = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				GITHUB_PERSONAL_ACCESS_TOKEN = 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;
+				GITHUB_PERSONAL_ACCESS_TOKEN = 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;
 				INFOPLIST_FILE = "TCAWorkshop-Info.plist";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;

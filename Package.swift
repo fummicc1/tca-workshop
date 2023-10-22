@@ -123,9 +123,14 @@ let package = Package(
       name: "UserDefaultsClient",
       dependencies: [
         "Entity",
+		"Utils",
         .product(name: "Dependencies", package: "swift-dependencies"),
         .product(name: "XCTestDynamicOverlay", package: "xctest-dynamic-overlay"),
       ]
     ),
+	.target(
+	  name: "Utils",
+	  dependencies: []
+	),
   ]
 )
